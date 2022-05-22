@@ -16,7 +16,7 @@ from megasdkrestclient import MegaSdkRestClient, errors as mega_err
 
 faulthandler_enable()
 
-setdefaulttimeout(590)
+setdefaulttimeout(600)
 
 botStartTime = time()
 
@@ -31,19 +31,41 @@ load_dotenv('config.env', override=True)
 def getConfig(name: str):
     return environ[name]
 
+try:
+    NETRC_URL = getConfig('NETRC_URL')
+    if len(NETRC_URL) == 0:
+        raise KeyError
+    try:
+        res = rget(NETRC_URL)
+        if res.status_code == 200:
+            with open('.netrc', 'wb+') as f:
+                f.write(res.content)
+        else:
+            log_error(f"Failed to download .netrc {res.status_code}")
+    except Exception as e:
+        log_error(f"NETRC_URL: {e}")
+except:
+    pass
+try:
+    SERVER_PORT = getConfig('SERVER_PORT')
+    if len(SERVER_PORT) == 0:
+        raise KeyError
+except:
+    SERVER_PORT = 80
 
-
-SERVER_PORT = 80
-
-PORT = environ.get('PORT', SERVER_PORT)
-srun(["qbittorrent-nox", "-d", "--profile=."])
-srun(["chmod", "+x", "aria.sh"])
-srun(["./aria.sh"], shell=True)
+PORT = 80
 
 Interval = []
 DRIVES_NAMES = []
 DRIVES_IDS = []
 INDEX_URLS = []
+
+try:
+    if bool(getConfig('_____REMOVE_THIS_LINE_____')):
+        log_error('The README.md file there to be read! Exiting now!')
+        exit()
+except:
+    pass
 
 aria2 = ariaAPI(
     ariaClient(
@@ -56,6 +78,11 @@ aria2 = ariaAPI(
 def get_client():
     return qbClient(host="localhost", port=8090)
 
+trackers = check_output(["curl -Ns https://raw.githubusercontent.com/XIU2/TrackersListCollection/master/all.txt https://ngosang.github.io/trackerslist/trackers_all_http.txt https://newtrackon.com/api/all | awk '$0'"], shell=True).decode('utf-8')
+trackerslist = set(trackers.split("\n"))
+trackerslist.remove("")
+trackerslist = "\n\n".join(trackerslist)
+get_client().application.set_preferences({"add_trackers": f"{trackerslist}"})
 
 DOWNLOAD_DIR = None
 BOT_TOKEN = None
