@@ -143,7 +143,7 @@ except:
     LOGGER.info('MEGA_API_KEY not provided!')
 if MEGA_KEY is not None:
     # Start megasdkrest binary
-    srun(["megasdkrest", "--apikey", MEGA_KEY])
+    Popen(["megasdkrest", "--apikey", MEGA_KEY])
     sleep(3)  # Wait for the mega server to start listening
     mega_client = MegaSdkRestClient('http://localhost:6090')
     try:
