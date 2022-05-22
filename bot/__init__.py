@@ -11,8 +11,11 @@ from subprocess import Popen, run as srun, check_output
 from time import sleep, time
 from threading import Thread, Lock
 from pyrogram import Client
-from dotenv import load_dotenv
+import dotenv 
 from megasdkrestclient import MegaSdkRestClient, errors as mega_err
+dotenv.load_dotenv('config.env', override=True)
+
+print("done")
 
 faulthandler_enable()
 
