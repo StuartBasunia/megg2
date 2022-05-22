@@ -64,27 +64,24 @@ def stats(update, context):
 
 def start(update, context):
     buttons = ButtonMaker()
-    buttons.buildbutton("Repo", "https://www.github.com/anasty17/mirror-leech-telegram-bot")
-    buttons.buildbutton("Report Group", "https://t.me/+PRRzqHd31XY3ZWZk")
+    buttons.buildbutton("Repo", "https://www.github.com")
+    buttons.buildbutton("Report Group", "https://t.me/reconrex")
     reply_markup = InlineKeyboardMarkup(buttons.build_menu(2))
     if CustomFilters.authorized_user(update) or CustomFilters.authorized_chat(update):
         start_string = f'''
-This bot can mirror all your links to Google Drive!
-Type /{BotCommands.HelpCommand} to get a list of available commands
+Type /{BotCommands.HelpCommand}
 '''
         sendMarkup(start_string, context.bot, update.message, reply_markup)
     else:
-        sendMarkup('Not Authorized user, deploy your own mirror-leech bot', context.bot, update.message, reply_markup)
+        sendMarkup('Not Authorized', context.bot, update.message, reply_markup)
 
 def restart(update, context):
     restart_message = sendMessage("Restarting...", context.bot, update.message)
     if Interval:
         Interval[0].cancel()
-    srun(["pkill", "-f", "gunicorn"])
     clean_all()
     srun(["pkill", "-f", "aria2c"])
     srun(["pkill", "-f", "megasdkrest"])
-    srun(["python3", "update.py"])
     with open(".restartmsg", "w") as f:
         f.truncate(0)
         f.write(f"{restart_message.chat.id}\n{restart_message.message_id}\n")
@@ -93,7 +90,7 @@ def restart(update, context):
 
 def ping(update, context):
     start_time = int(round(time() * 1000))
-    reply = sendMessage("Starting Ping", context.bot, update.message)
+    reply = sendMessage("Starting Ping...", context.bot, update.message)
     end_time = int(round(time() * 1000))
     editMessage(f'{end_time - start_time} ms', reply)
 
@@ -164,14 +161,14 @@ help_string_telegraph = f'''<br>
 <b>/{BotCommands.ListCommand}</b> [query]: Search in Google Drive(s)
 <br><br>
 <b>/{BotCommands.SearchCommand}</b> [query]: Search for torrents with API
-<br>sites: <code>rarbg, 1337x, yts, etzv, tgx, torlock, piratebay, nyaasi, ettv</code><br><br>
+<br></code><br><br>
 <b>/{BotCommands.StatusCommand}</b>: Shows a status of all the downloads
 <br><br>
 <b>/{BotCommands.StatsCommand}</b>: Show Stats of the machine the bot is hosted on
 '''
 
 help = telegraph.create_page(
-        title='Mirror-Leech-Bot Help',
+        title='Help',
         content=help_string_telegraph,
     )["path"]
 
@@ -250,7 +247,7 @@ def main():
         try:
             for i in AUTHORIZED_CHATS:
                 if str(i).startswith('-'):
-                    bot.sendMessage(chat_id=i, text="<b>Bot Started!</b>", parse_mode=ParseMode.HTML)
+                    bot.sendMessage(chat_id=i, text="<b>Bot Started</b>", parse_mode=ParseMode.HTML)
         except Exception as e:
             LOGGER.error(e)
 
@@ -271,7 +268,7 @@ def main():
     dispatcher.add_handler(stats_handler)
     dispatcher.add_handler(log_handler)
     updater.start_polling(drop_pending_updates=IGNORE_PENDING_REQUESTS)
-    LOGGER.info("Bot Started!")
+    LOGGER.info("Reboot Successful")
     signal(SIGINT, exit_clean_up)
     if rss_session is not None:
         rss_session.start()

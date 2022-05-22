@@ -26,32 +26,12 @@ basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
 
 LOGGER = getLogger(__name__)
 
-load_dotenv('config.env', override=True)
 
 def getConfig(name: str):
     return environ[name]
 
-try:
-    NETRC_URL = getConfig('NETRC_URL')
-    if len(NETRC_URL) == 0:
-        raise KeyError
-    try:
-        res = rget(NETRC_URL)
-        if res.status_code == 200:
-            with open('.netrc', 'wb+') as f:
-                f.write(res.content)
-        else:
-            log_error(f"Failed to download .netrc {res.status_code}")
-    except Exception as e:
-        log_error(f"NETRC_URL: {e}")
-except:
-    pass
-try:
-    SERVER_PORT = getConfig('SERVER_PORT')
-    if len(SERVER_PORT) == 0:
-        raise KeyError
-except:
-    SERVER_PORT = 80
+
+SERVER_PORT = 80
 
 PORT = 80
 
@@ -59,13 +39,6 @@ Interval = []
 DRIVES_NAMES = []
 DRIVES_IDS = []
 INDEX_URLS = []
-
-try:
-    if bool(getConfig('_____REMOVE_THIS_LINE_____')):
-        log_error('The README.md file there to be read! Exiting now!')
-        exit()
-except:
-    pass
 
 aria2 = ariaAPI(
     ariaClient(
@@ -78,25 +51,13 @@ aria2 = ariaAPI(
 def get_client():
     return qbClient(host="localhost", port=8090)
 
-trackers = check_output(["curl -Ns https://raw.githubusercontent.com/XIU2/TrackersListCollection/master/all.txt https://ngosang.github.io/trackerslist/trackers_all_http.txt https://newtrackon.com/api/all | awk '$0'"], shell=True).decode('utf-8')
-trackerslist = set(trackers.split("\n"))
-trackerslist.remove("")
-trackerslist = "\n\n".join(trackerslist)
-get_client().application.set_preferences({"add_trackers": f"{trackerslist}"})
-
 DOWNLOAD_DIR = None
 BOT_TOKEN = None
 
 download_dict_lock = Lock()
 status_reply_dict_lock = Lock()
-# Key: update.effective_chat.id
-# Value: telegram.Message
 status_reply_dict = {}
-# Key: update.message.message_id
-# Value: An object of Status
 download_dict = {}
-# key: rss_title
-# value: [rss_feed, last_link, last_title, filter]
 rss_dict = {}
 
 AUTHORIZED_CHATS = set()
@@ -105,16 +66,8 @@ AS_DOC_USERS = set()
 AS_MEDIA_USERS = set()
 EXTENTION_FILTER = set(['.torrent'])
 
-if ospath.exists('authorized_chats.txt'):
-    with open('authorized_chats.txt', 'r+') as f:
-        lines = f.readlines()
-        for line in lines:
-            AUTHORIZED_CHATS.add(int(line.split()[0]))
-if ospath.exists('sudo_users.txt'):
-    with open('sudo_users.txt', 'r+') as f:
-        lines = f.readlines()
-        for line in lines:
-            SUDO_USERS.add(int(line.split()[0]))
+
+
 try:
     aid = getConfig('AUTHORIZED_CHATS')
     aid = aid.split(' ')
