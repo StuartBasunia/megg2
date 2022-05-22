@@ -161,7 +161,7 @@ help_string_telegraph = f'''<br>
 <b>/{BotCommands.ListCommand}</b> [query]: Search in Google Drive(s)
 <br><br>
 <b>/{BotCommands.SearchCommand}</b> [query]: Search for torrents with API
-<br></code><br><br>
+<br><br><br>
 <b>/{BotCommands.StatusCommand}</b>: Shows a status of all the downloads
 <br><br>
 <b>/{BotCommands.StatsCommand}</b>: Show Stats of the machine the bot is hosted on
